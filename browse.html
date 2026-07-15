@@ -8,7 +8,7 @@
 <meta name="description" content="Search rooms across Ireland and match with roommates who fit your vibe, on Keymate.">
 <!-- Open Graph / WhatsApp / Facebook -->
 <link rel="canonical" href="https://www.mykeymate.com/browse.html">
-<link rel="icon" href="https://www.mykeymate.com/logo.png">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Keymate">
 <meta property="og:url" content="https://www.mykeymate.com/browse.html">
@@ -25,6 +25,7 @@
 <meta name="twitter:title" content="Keymate — Search rooms in Ireland">
 <meta name="twitter:description" content="Find a room and match with roommates who fit your vibe. Built for the community in Ireland.">
 <meta name="twitter:image" content="https://www.mykeymate.com/og-image.png">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 </head>
 <body>
 <style>
@@ -106,14 +107,13 @@
   .mapview{display:none;grid-template-columns:1fr;gap:0}
   .mapview.on{display:block}
   .grid.off{display:none}
-  .mapwrap{position:relative;height:560px;border-radius:18px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow-sm);
-    background:
-      repeating-linear-gradient(0deg,transparent 0 34px,rgba(120,140,170,.10) 34px 35px),
-      repeating-linear-gradient(90deg,transparent 0 34px,rgba(120,140,170,.10) 34px 35px),
-      radial-gradient(220px 180px at 62% 40%,rgba(46,160,110,.20),transparent 70%),
-      radial-gradient(280px 200px at 30% 74%,rgba(46,120,200,.14),transparent 70%),
-      radial-gradient(180px 150px at 80% 74%,rgba(200,120,60,.12),transparent 70%),
-      var(--card-2)}
+  .mapwrap{position:relative;height:560px;border-radius:18px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow-sm);background:var(--card-2)}
+  #browsemap{position:absolute;inset:0;z-index:0}
+  .mapwrap .legend,.mapwrap .maptag{z-index:2}
+  .leaflet-div-icon{background:transparent;border:0}
+  .mpx{font-weight:800;font-size:12.5px;padding:6px 11px;border-radius:999px;box-shadow:0 8px 18px -6px rgba(0,0,0,.4);white-space:nowrap;cursor:pointer;display:inline-block;transform:translate(-50%,-115%)}
+  .mpx.room{background:var(--brand);color:#fff}
+  .mpx.seek{background:var(--violet);color:#fff}
   .mappin{position:absolute;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center;cursor:pointer}
   .mappin .b{font-weight:800;font-size:12.5px;padding:6px 11px;border-radius:999px;box-shadow:0 8px 18px -6px rgba(0,0,0,.4);white-space:nowrap}
   .mappin.room .b{background:var(--brand);color:#fff}
@@ -241,16 +241,9 @@ function kmCloseDev(){var e=document.getElementById('km-dev');if(e)e.style.displ
 
     <div id="mapview" class="mapview">
       <div class="mapwrap">
+        <div id="browsemap"></div>
         <div class="legend"><div><i style="background:var(--brand)"></i> Available room</div><div><i style="background:var(--violet)"></i> Looking for a room</div></div>
-        <div class="zoom"><button>＋</button><button>－</button></div>
-        <div class="mappin room" style="left:58%;top:34%"><span class="b">€680</span><span class="tail"></span></div>
-        <div class="mappin room" style="left:64%;top:41%"><span class="b">€520</span><span class="tail"></span></div>
-        <div class="mappin seek" style="left:52%;top:46%"><span class="b">Lucas · €700</span><span class="tail"></span></div>
-        <div class="mappin room" style="left:30%;top:70%"><span class="b">€560</span><span class="tail"></span></div>
-        <div class="mappin room" style="left:22%;top:44%"><span class="b">€610</span><span class="tail"></span></div>
-        <div class="mappin room" style="left:40%;top:82%"><span class="b">€495</span><span class="tail"></span></div>
-        <div class="mappin seek" style="left:70%;top:60%"><span class="b">Hannah · €600</span><span class="tail"></span></div>
-        <div class="maptag">🗺️ Ireland · drag to explore · pins show monthly rent</div>
+        <div class="maptag">🗺️ Ireland · pins show monthly rent · click a room to open it</div>
       </div>
     </div>
   </div>
@@ -261,7 +254,7 @@ function kmCloseDev(){var e=document.getElementById('km-dev');if(e)e.style.displ
   function setView(v){
     var grid=document.getElementById('grid'), map=document.getElementById('mapview');
     var tG=document.getElementById('tGrid'), tM=document.getElementById('tMap');
-    if(v==='map'){grid.classList.add('off');map.classList.add('on');tM.classList.add('on');tG.classList.remove('on');}
+    if(v==='map'){grid.classList.add('off');map.classList.add('on');tM.classList.add('on');tG.classList.remove('on');if(window.kmRenderMap)setTimeout(window.kmRenderMap,40);}
     else{grid.classList.remove('off');map.classList.remove('on');tG.classList.add('on');tM.classList.remove('on');}
   }
   // ---- Real client-side filtering of the grid cards ----
@@ -311,6 +304,8 @@ function kmCloseDev(){var e=document.getElementById('km-dev');if(e)e.style.displ
     if(head) head.textContent=shown+(shown===1?' place':' places')+' across Ireland';
     var empty=document.getElementById('kmEmpty');
     if(empty) empty.style.display=shown?'none':'block';
+    var mv=document.getElementById('mapview');
+    if(window.kmRenderMap && mv && mv.classList.contains('on')) window.kmRenderMap();
   }
 
   /* O botao Filters mostra/esconde a .fbar. No celular ela nasce fechada:
@@ -480,5 +475,60 @@ var zoom=document.querySelector('.zoom');if(zoom&&zoom.parentElement){var sc=1,b
   .topbar-in .filterbtn{margin-left:0}
 }
 </style>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* Mapa REAL do browse (Leaflet) — pins nas coordenadas reais das cidades,
+   dirigidos pelos cards visíveis (respeita filtros). */
+(function(){
+  // preço (único por anúncio) -> coordenada real
+  var COORDS={
+    '680':[53.3707,-6.2591],  // Drumcondra, Dublin 9
+    '520':[53.3300,-6.2650],  // perto da Trinity / Rathmines, Dublin 6
+    '560':[51.8935,-8.4920],  // Cork, perto da UCC
+    '610':[53.2585,-9.0817],  // Salthill, Galway
+    '1850':[53.3399,-6.2340], // Grand Canal Dock, Dublin 2
+    '495':[52.6741,-8.5722],  // Limerick, perto da UL
+    '500':[52.2456,-7.1385],  // Waterford, perto da SETU
+    '590':[53.3818,-6.5919]   // Maynooth, perto da MU
+  };
+  var SEEKERS=[
+    {label:'Lucas · €700',lat:53.3370,lng:-6.2890}, // Dublin 8
+    {label:'Hannah · €600',lat:53.2707,lng:-9.0568} // Galway
+  ];
+  var map=null,layer=null;
+  function ensureMap(){
+    if(map||!window.L)return;
+    var el=document.getElementById('browsemap');if(!el)return;
+    var dark=(window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches)||document.documentElement.getAttribute('data-theme')==='dark';
+    map=L.map(el,{scrollWheelZoom:false,zoomControl:false}).setView([53.4,-7.9],7);
+    L.control.zoom({position:'topright'}).addTo(map);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/'+(dark?'dark_all':'light_all')+'/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:19,attribution:'&copy; OpenStreetMap &copy; CARTO'}).addTo(map);
+    layer=L.layerGroup().addTo(map);
+  }
+  function pin(type,label){return L.divIcon({className:'',html:'<span class="mpx '+type+'">'+label+'</span>',iconSize:[0,0],iconAnchor:[0,0]});}
+  function seg(){var b=document.querySelector('.seg button.on');return b?b.textContent.trim():'All';}
+  function render(){
+    ensureMap();if(!map||!layer)return;
+    layer.clearLayers();
+    var s=seg(),pts=[];
+    if(s!=='Roommates'){
+      document.querySelectorAll('#grid .pcard').forEach(function(c){
+        if(c.style.display==='none')return;
+        var p=(c.getAttribute('data-price')||'').replace(/[^0-9]/g,'');
+        var co=COORDS[p];if(!co)return;
+        var euro='€'+Number(p).toLocaleString('en-IE');
+        L.marker(co,{icon:pin('room',euro)}).addTo(layer).on('click',function(){location.href='listing.html';});
+        pts.push(co);
+      });
+    }
+    if(s!=='Rooms'){
+      SEEKERS.forEach(function(k){L.marker([k.lat,k.lng],{icon:pin('seek',k.label)}).addTo(layer);pts.push([k.lat,k.lng]);});
+    }
+    if(pts.length){try{map.fitBounds(pts,{padding:[55,55],maxZoom:12});}catch(e){}}
+    setTimeout(function(){try{map.invalidateSize();}catch(e){}},60);
+  }
+  window.kmRenderMap=render;
+})();
+</script>
 </body>
 </html>
