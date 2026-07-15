@@ -1,0 +1,4 @@
+# go2ireland.site — ambiente de teste/preview do Keymate.
+# Nao indexar: o conteudo oficial fica em mykeymate.com no lancamento.
+User-agent: *
+Disallow: /

@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+<meta name="robots" content="noindex,nofollow">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Keymate — rooms and roommate matching.">
@@ -258,6 +259,38 @@ var zoom=document.querySelector('.zoom');if(zoom&&zoom.parentElement){var sc=1,b
       try{ localStorage.setItem('km_photo',data); }catch(e){}
     });
   });
+})();
+</script>
+
+<!-- km-mobile-nav v1 -->
+<script>
+(function(){
+  if(window.__kmNavInit) return; window.__kmNavInit=1;
+  function boot(){
+    var side=document.querySelector('.km-side');
+    var bar=document.querySelector('.topbar-in');
+    if(!side||!bar) return;
+    if(bar.querySelector('.km-burger')) return;
+    var css='.km-burger{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;flex:none;padding:0}'
+      +'.km-navbd{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:55;opacity:0;transition:opacity .2s ease;pointer-events:none}'
+      +'.km-navbd.on{opacity:1;pointer-events:auto}'
+      +'body.km-navopen .km-side{display:flex!important;z-index:60;box-shadow:2px 0 18px rgba(0,0,0,.15)}'
+      +'@media(min-width:1000px){.km-burger,.km-navbd{display:none!important}}';
+    var st=document.createElement('style'); st.textContent=css; document.head.appendChild(st);
+    var b=document.createElement('button');
+    b.type='button'; b.className='km-burger'; b.setAttribute('aria-label','Menu'); b.setAttribute('aria-expanded','false'); b.title='Menu';
+    b.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>';
+    bar.insertBefore(b, bar.firstChild);
+    var bd=document.createElement('div'); bd.className='km-navbd'; document.body.appendChild(bd);
+    function open(){ document.body.classList.add('km-navopen'); bd.classList.add('on'); b.setAttribute('aria-expanded','true'); }
+    function close(){ document.body.classList.remove('km-navopen'); bd.classList.remove('on'); b.setAttribute('aria-expanded','false'); }
+    function toggle(){ document.body.classList.contains('km-navopen')?close():open(); }
+    b.addEventListener('click', toggle);
+    bd.addEventListener('click', close);
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
+    [].forEach.call(side.querySelectorAll('a'), function(a){ a.addEventListener('click', close); });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();
 </script>
 </body>
