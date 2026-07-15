@@ -1,0 +1,12 @@
+# ── go2ireland.site (preview do Keymate) ──────────────────────────────
+# Headers de segurança básicos (verificados na auditoria de QA 2026-07-15)
+<IfModule mod_headers.c>
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# Página 404 personalizada (com marca + link para a home)
+ErrorDocument 404 /404.html

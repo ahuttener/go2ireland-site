@@ -4,8 +4,8 @@
 <meta name="robots" content="noindex,nofollow">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Keymate — rooms and roommate matching.">
-<title>Keymate</title>
+<meta name="description" content="Keymate helps you find a room you can trust and match with roommates who actually fit your vibe, across Ireland.">
+<title>Keymate — Rooms &amp; roommates you click with, in Ireland</title>
 <!-- Open Graph / WhatsApp / Facebook -->
 <link rel="canonical" href="https://www.mykeymate.com/">
 <link rel="icon" href="https://www.mykeymate.com/logo.png">
@@ -650,14 +650,14 @@ function kmCloseDev(){var e=document.getElementById('km-dev');if(e)e.style.displ
     kmWalk(l==='pt'?EN_PT:PT_EN);
     if(KM_ORIG_LOGO){ document.documentElement.style.setProperty('--logo', l==='pt'?KM_BR_LOGO:KM_ORIG_LOGO); }
     curLang=l;
-    try{sessionStorage.setItem('km_lang',l);}catch(e){} /* km_lang persist */
+    try{localStorage.setItem('km_lang',l);}catch(e){} /* km_lang persist */
     updateBrbar();
     var e=document.getElementById('langEn'),p=document.getElementById('langPt');
     if(e)e.classList.toggle('on',l==='en'); if(p)p.classList.toggle('on',l==='pt');
     document.documentElement.lang=l;
   }
 
-  (function(){try{if(sessionStorage.getItem('km_lang')==='pt')setLang('pt');}catch(e){}})();
+  (function(){try{if(localStorage.getItem('km_lang')==='pt')setLang('pt');}catch(e){}})();
   (function(){
     var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion:reduce)").matches;
     var io = new IntersectionObserver(function(entries){

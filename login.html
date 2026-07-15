@@ -4,8 +4,8 @@
 <meta name="robots" content="noindex,nofollow">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Keymate — rooms and roommate matching.">
-<title>Keymate</title>
+<meta name="description" content="Log in to Keymate to browse rooms, message hosts and manage your roommate matches in Ireland.">
+<title>Log in · Keymate</title>
 <!-- Open Graph / WhatsApp / Facebook -->
 <link rel="canonical" href="https://www.mykeymate.com/login.html">
 <link rel="icon" href="https://www.mykeymate.com/logo.png">
@@ -170,7 +170,7 @@ function kmCloseDev(){var e=document.getElementById('km-dev');if(e)e.style.displ
         <label for="pass">Password</label>
         <input class="inp" id="pass" type="password" placeholder="••••••••" autocomplete="current-password">
       </div>
-      <div class="row-forgot" id="forgot"><a href="#" onclick="return false">Forgot password?</a></div>
+      <div class="row-forgot" id="forgot"><a href="mailto:info@mykeymate.com?subject=Keymate%20%E2%80%94%20password%20help">Forgot password?</a></div>
 
       <button class="btn btn-primary" id="submitBtn" onclick="kmEnter()">Log in →</button>
 
@@ -225,7 +225,7 @@ function kmCloseDev(){var e=document.getElementById('km-dev');if(e)e.style.displ
   });
  }
  function toPT(){ walk(PT); if(EN_LOGO)document.documentElement.style.setProperty('--logo','url("'+GREEN+'")'); document.documentElement.lang='pt'; try{document.querySelectorAll('.km-en').forEach(function(x){x.style.display=x.getAttribute('data-d')||'flex';});}catch(e){} }
- function boot(){ var s=null; try{s=sessionStorage.getItem('km_lang');}catch(e){} if(s==='pt')toPT(); }
+ function boot(){ var s=null; try{s=localStorage.getItem('km_lang');}catch(e){} if(s==='pt')toPT(); }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot); else boot();
 })();
 </script>
