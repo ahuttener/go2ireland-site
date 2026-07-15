@@ -161,7 +161,7 @@
     <div class="panel on" id="p-profile">
       <div class="grid2">
         <div class="card"><div class="k">&#9993; Email</div><div class="v empty">Not set</div></div>
-        <div class="card"><div class="k">&#128100; Full name</div><div class="v empty">Not set</div></div>
+        <div class="card"><div class="k">&#128100; Full name</div><div class="v empty" id="pFullName">Not set</div></div>
         <div class="card"><div class="k">&#127874; Age</div><div class="v">40</div></div>
         <div class="card"><div class="k">Nationality</div><div class="v">Brazilian</div></div>
         <div class="card"><div class="k">&#128172; Languages</div><div class="v">English · Portuguese</div></div>
@@ -307,6 +307,22 @@ var zoom=document.querySelector('.zoom');if(zoom&&zoom.parentElement){var sc=1,b
     [].forEach.call(side.querySelectorAll('a'), function(a){ a.addEventListener('click', close); });
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+})();
+</script>
+<script>
+/* Mostra o nome salvo no edit-profile (localStorage km_name) no cabeçalho e no campo Full name */
+(function(){
+  function showName(){
+    try{
+      var nm=(localStorage.getItem('km_name')||'').trim();
+      if(!nm)return;
+      var h=document.querySelector('.phead .who h1');
+      if(h)h.textContent=nm;
+      var fn=document.getElementById('pFullName');
+      if(fn){fn.textContent=nm;fn.classList.remove('empty');}
+    }catch(e){}
+  }
+  if(document.readyState!=='loading')showName();else document.addEventListener('DOMContentLoaded',showName);
 })();
 </script>
 </body>

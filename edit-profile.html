@@ -125,7 +125,7 @@
         <div><b>Profile photo</b><br><span>Shown on your listings and reviews.</span></div>
         <label class="up" for="phInput">Upload</label><input type="file" id="phInput" accept="image/*" style="display:none">
       </div>
-      <div class="field"><label>Name</label><input class="inp" placeholder="Your name"></div>
+      <div class="field"><label for="pName">Name</label><input class="inp" id="pName" aria-label="Name" placeholder="Your name"></div>
       <div class="two">
         <div class="field"><label>Age</label><input class="inp" type="number" value="40"></div>
         <div class="field"><label>Nationality</label><select class="inp" id="natSel" onchange="kmNatPick(this.value)"><option value="Brazilian">Brazilian</option><option value="Irish">Irish</option><option value="Portuguese">Portuguese</option><option value="Spanish">Spanish</option><option value="Italian">Italian</option><option value="French">French</option><option value="German">German</option><option value="Polish">Polish</option><option value="Romanian">Romanian</option><option value="Indian">Indian</option><option value="American">American</option><option value="British">British</option><option value="Argentine">Argentine</option><option value="Venezuelan">Venezuelan</option><option value="Colombian">Colombian</option><option value="Nigerian">Nigerian</option><option value="Other">Other</option></select></div>
@@ -175,7 +175,9 @@
   <script>
     function pick(el){el.parentElement.querySelectorAll('.segbtn').forEach(function(x){x.classList.remove('on');});el.classList.add('on');}
     function tg(el){el.classList.toggle('on');}
-    function save(){var s=document.getElementById('saved');s.classList.add('on');window.scrollTo({top:9999,behavior:'smooth'});setTimeout(function(){location.href='profile.html';},900);}
+    function save(){try{var _n=document.getElementById('pName');if(_n){var v=_n.value.trim();if(v)localStorage.setItem('km_name',v);else localStorage.removeItem('km_name');}}catch(e){}var s=document.getElementById('saved');s.classList.add('on');window.scrollTo({top:9999,behavior:'smooth'});setTimeout(function(){location.href='profile.html';},900);}
+/* pré-carrega o nome salvo no campo ao abrir a página */
+(function(){function fillName(){try{var _n=document.getElementById('pName');var nm=localStorage.getItem('km_name');if(_n&&nm)_n.value=nm;}catch(e){}}if(document.readyState!=='loading')fillName();else document.addEventListener('DOMContentLoaded',fillName);})();
   </script>
 </div>
 
