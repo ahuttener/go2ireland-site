@@ -382,6 +382,7 @@ function kmCloseDev(){var e=document.getElementById('km-dev');if(e)e.style.displ
     }
   }
   (function(){ try{ var v=localStorage.getItem('km_natfilter'); if(v){ var s=document.getElementById('natFilter'); if(s){ s.value=v; chipVal(s); } } }catch(e){} })();
+  (function(){ try{ var c=(new URLSearchParams(location.search).get('city')||'').trim(); if(c){ var sel=document.getElementById('fCity'); if(sel){ for(var i=0;i<sel.options.length;i++){ if((sel.options[i].value||'').toLowerCase()===c.toLowerCase()){ sel.selectedIndex=i; chipVal(sel); break; } } } } }catch(e){} })();
   applyFilters();
 </script>
 
