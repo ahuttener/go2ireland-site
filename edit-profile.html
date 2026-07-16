@@ -126,42 +126,43 @@
         <label class="up" for="phInput">Upload</label><input type="file" id="phInput" accept="image/*" style="display:none">
       </div>
       <div class="field"><label for="pName">Name</label><input class="inp" id="pName" aria-label="Name" placeholder="Your name"></div>
+      <div class="field"><label for="fEmail">Email</label><input class="inp" id="fEmail" aria-label="Email" type="email" placeholder="you@email.com"></div>
       <div class="two">
-        <div class="field"><label>Age</label><input class="inp" type="number" value="40"></div>
+        <div class="field"><label>Age</label><input class="inp" id="fAge" type="number" value="40"></div>
         <div class="field"><label>Nationality</label><select class="inp" id="natSel" onchange="kmNatPick(this.value)"><option value="Brazilian">Brazilian</option><option value="Irish">Irish</option><option value="Portuguese">Portuguese</option><option value="Spanish">Spanish</option><option value="Italian">Italian</option><option value="French">French</option><option value="German">German</option><option value="Polish">Polish</option><option value="Romanian">Romanian</option><option value="Indian">Indian</option><option value="American">American</option><option value="British">British</option><option value="Argentine">Argentine</option><option value="Venezuelan">Venezuelan</option><option value="Colombian">Colombian</option><option value="Nigerian">Nigerian</option><option value="Other">Other</option></select></div>
       </div>
       <script>
       // Choosing "Brazilian" switches the whole site to Portuguese (green logo);
       // any other nationality keeps it in English. This is the language trigger.
-      function kmNatPick(v){ try{ localStorage.setItem('km_lang', v==='Brazilian'?'pt':'en'); }catch(e){} location.reload(); }
+      function kmNatPick(v){ try{ localStorage.setItem('km_lang', v==='Brazilian'?'pt':'en'); }catch(e){} try{ if(window.kmSnapshot) kmSnapshot(); }catch(e){} location.reload(); }
       (function(){ try{ var s=document.getElementById('natSel'); if(s&&localStorage.getItem('km_lang')==='pt') s.value='Brazilian'; }catch(e){} })();
       </script>
-      <div class="field"><label>Languages <span class="hint">comma-separated</span></label><input class="inp" value="English, Portuguese"></div>
-      <div class="field"><label>Bio</label><textarea placeholder="A little about you…"></textarea></div>
+      <div class="field"><label>Languages <span class="hint">comma-separated</span></label><input class="inp" id="fLangs" value="English, Portuguese"></div>
+      <div class="field"><label>Bio</label><textarea id="fBio" placeholder="A little about you…"></textarea></div>
     </div>
 
     <div class="card">
       <h3>Occupation</h3>
-      <div class="seg" style="margin-bottom:14px">
+      <div class="seg" id="segOcc" style="margin-bottom:14px">
         <span class="segbtn on" onclick="pick(this)">Student</span>
         <span class="segbtn" onclick="pick(this)">Professional</span>
         <span class="segbtn" onclick="pick(this)">Other</span>
       </div>
-      <div class="field"><label>University / employer <span class="hint">optional, builds trust</span></label><input class="inp" placeholder="e.g. Trinity College Dublin"></div>
+      <div class="field"><label>University / employer <span class="hint">optional, builds trust</span></label><input class="inp" id="fOrg" placeholder="e.g. Trinity College Dublin"></div>
     </div>
 
     <div class="card">
       <h3>Living preferences</h3>
       <div class="field"><label>Pets</label>
-        <div class="seg"><span class="segbtn on" onclick="pick(this)">🐾 Pets</span><span class="segbtn" onclick="pick(this)">Depends</span></div>
+        <div class="seg" id="segPets"><span class="segbtn on" onclick="pick(this)">🐾 Pets</span><span class="segbtn" onclick="pick(this)">Depends</span></div>
       </div>
-      <div class="field"><label>Move-in date <span class="hint">exact date</span></label><input class="inp" type="date"></div>
-      <div class="togrow" style="margin-top:6px">Smoking <span class="toggle" onclick="tg(this)"><i></i></span></div>
+      <div class="field"><label>Move-in date <span class="hint">exact date</span></label><input class="inp" id="fMovein" type="date"></div>
+      <div class="togrow" style="margin-top:6px">Smoking <span class="toggle" id="tgSmoke" onclick="tg(this)"><i></i></span></div>
       <div class="field" style="margin-top:6px"><label>Noise level</label>
-        <div class="seg"><span class="segbtn" onclick="pick(this)">Quiet</span><span class="segbtn on" onclick="pick(this)">Moderate</span><span class="segbtn" onclick="pick(this)">Lively</span></div>
+        <div class="seg" id="segNoise"><span class="segbtn" onclick="pick(this)">Quiet</span><span class="segbtn on" onclick="pick(this)">Moderate</span><span class="segbtn" onclick="pick(this)">Lively</span></div>
       </div>
       <div class="field"><label>Schedule</label>
-        <div class="seg"><span class="segbtn" onclick="pick(this)">Early bird</span><span class="segbtn" onclick="pick(this)">Night owl</span><span class="segbtn on" onclick="pick(this)">Flexible</span></div>
+        <div class="seg" id="segSched"><span class="segbtn" onclick="pick(this)">Early bird</span><span class="segbtn" onclick="pick(this)">Night owl</span><span class="segbtn on" onclick="pick(this)">Flexible</span></div>
       </div>
     </div>
 
@@ -175,9 +176,39 @@
   <script>
     function pick(el){el.parentElement.querySelectorAll('.segbtn').forEach(function(x){x.classList.remove('on');});el.classList.add('on');}
     function tg(el){el.classList.toggle('on');}
-    function save(){try{var _n=document.getElementById('pName');if(_n){var v=_n.value.trim();if(v)localStorage.setItem('km_name',v);else localStorage.removeItem('km_name');}}catch(e){}var s=document.getElementById('saved');s.classList.add('on');window.scrollTo({top:9999,behavior:'smooth'});setTimeout(function(){location.href='profile.html';},900);}
-/* pré-carrega o nome salvo no campo ao abrir a página */
-(function(){function fillName(){try{var _n=document.getElementById('pName');var nm=localStorage.getItem('km_name');if(_n&&nm)_n.value=nm;}catch(e){}}if(document.readyState!=='loading')fillName();else document.addEventListener('DOMContentLoaded',fillName);})();
+    function kmLS(k,v){ try{ if(v==null||v==='') localStorage.removeItem(k); else localStorage.setItem(k,v);}catch(e){} }
+    function kmGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+    function kmVal(id){ var e=document.getElementById(id); return e?(e.value||'').trim():''; }
+    function kmSegOn(id){ var c=document.getElementById(id); if(!c) return ''; var b=c.querySelector('.segbtn.on'); return b?(b.textContent||'').trim():''; }
+    function kmSnapshot(){
+      kmLS('km_name', kmVal('pName'));
+      kmLS('km_email', kmVal('fEmail'));
+      kmLS('km_age', kmVal('fAge'));
+      kmLS('km_langs', kmVal('fLangs'));
+      kmLS('km_bio', kmVal('fBio'));
+      kmLS('km_org', kmVal('fOrg'));
+      kmLS('km_movein', kmVal('fMovein'));
+      var nat=document.getElementById('natSel'); if(nat) kmLS('km_nat', nat.value);
+      kmLS('km_occ', kmSegOn('segOcc'));
+      kmLS('km_pets', kmSegOn('segPets'));
+      kmLS('km_noise', kmSegOn('segNoise'));
+      kmLS('km_sched', kmSegOn('segSched'));
+      var sm=document.getElementById('tgSmoke'); kmLS('km_smoke', (sm&&sm.classList.contains('on'))?'1':'0');
+    }
+    window.kmSnapshot = kmSnapshot;
+    function save(){ kmSnapshot(); var s=document.getElementById('saved');s.classList.add('on');window.scrollTo({top:9999,behavior:'smooth'});setTimeout(function(){location.href='profile.html';},900); }
+    (function(){
+      function fill(id,k){ var e=document.getElementById(id), v=kmGet(k); if(e&&v!=null&&v!=='') e.value=v; }
+      function seg(id,k){ var v=kmGet(k); if(!v) return; var c=document.getElementById(id); if(!c) return; c.querySelectorAll('.segbtn').forEach(function(b){ if((b.textContent||'').trim()===v) b.classList.add('on'); else b.classList.remove('on'); }); }
+      function go(){
+        fill('pName','km_name'); fill('fEmail','km_email'); fill('fAge','km_age');
+        fill('fLangs','km_langs'); fill('fBio','km_bio'); fill('fOrg','km_org'); fill('fMovein','km_movein');
+        var nat=kmGet('km_nat'); if(nat){ var n=document.getElementById('natSel'); if(n) n.value=nat; }
+        seg('segOcc','km_occ'); seg('segPets','km_pets'); seg('segNoise','km_noise'); seg('segSched','km_sched');
+        var sm=kmGet('km_smoke'), t=document.getElementById('tgSmoke'); if(t){ if(sm==='1') t.classList.add('on'); else if(sm==='0') t.classList.remove('on'); }
+      }
+      if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',go); else go();
+    })();
   </script>
 </div>
 

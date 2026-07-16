@@ -160,13 +160,13 @@
 
     <div class="panel on" id="p-profile">
       <div class="grid2">
-        <div class="card"><div class="k">&#9993; Email</div><div class="v empty">Not set</div></div>
+        <div class="card"><div class="k">&#9993; Email</div><div class="v empty" id="pv-email">Not set</div></div>
         <div class="card"><div class="k">&#128100; Full name</div><div class="v empty" id="pFullName">Not set</div></div>
-        <div class="card"><div class="k">&#127874; Age</div><div class="v">40</div></div>
-        <div class="card"><div class="k">Nationality</div><div class="v">Brazilian</div></div>
-        <div class="card"><div class="k">&#128172; Languages</div><div class="v">English · Portuguese</div></div>
-        <div class="card"><div class="k">&#127891; Occupation</div><div class="v">Professional</div></div>
-        <div class="card full"><div class="k">&#9998; About me</div><div class="v empty">No bio added yet — tap Edit profile to introduce yourself.</div></div>
+        <div class="card"><div class="k">&#127874; Age</div><div class="v" id="pv-age">40</div></div>
+        <div class="card"><div class="k">Nationality</div><div class="v" id="pv-nat">Brazilian</div></div>
+        <div class="card"><div class="k">&#128172; Languages</div><div class="v" id="pv-langs">English · Portuguese</div></div>
+        <div class="card"><div class="k">&#127891; Occupation</div><div class="v" id="pv-occ">Professional</div></div>
+        <div class="card full"><div class="k">&#9998; About me</div><div class="v empty" id="pv-bio">No bio added yet — tap Edit profile to introduce yourself.</div></div>
       </div>
     </div>
 
@@ -176,7 +176,7 @@
       <div class="barrow"><div class="top"><b>&#127769; Sleep</b><span class="val">Early riser</span></div><div class="track"><i style="width:26%"></i></div><div class="ends"><span>Early</span><span>Night owl</span></div></div>
       <div class="barrow"><div class="top"><b>&#129529; Tidiness</b><span class="val">Tidy</span></div><div class="track"><i style="width:72%"></i></div><div class="ends"><span>Relaxed</span><span>Spotless</span></div></div>
       <div class="barrow"><div class="top"><b>&#127881; Social at home</b><span class="val">In between</span></div><div class="track"><i style="width:50%"></i></div><div class="ends"><span>Private</span><span>Full house</span></div></div>
-      <div class="barrow"><div class="top"><b>&#128266; Noise</b><span class="val">Quiet</span></div><div class="track"><i style="width:30%"></i></div><div class="ends"><span>Silence</span><span>Music on</span></div></div>
+      <div class="barrow"><div class="top"><b>&#128266; Noise</b><span class="val" id="pv-noise-val">Quiet</span></div><div class="track"><i id="pv-noise-bar" style="width:30%"></i></div><div class="ends"><span>Silence</span><span>Music on</span></div></div>
       <div class="sec-title">About your living style</div>
       <div class="chips">
         <span class="chip g">&#128684; Non-smoker</span>
@@ -206,7 +206,7 @@
       <div class="sec-title">Practical fit</div>
       <div class="grid2">
         <div class="card"><div class="k">&#128176; Budget</div><div class="v">€600 – €900 / mo</div></div>
-        <div class="card"><div class="k">&#128197; Move-in</div><div class="v">Flexible</div></div>
+        <div class="card"><div class="k">&#128197; Move-in</div><div class="v" id="pv-movein">Flexible</div></div>
         <div class="card"><div class="k">&#128205; Where</div><div class="v">Dublin</div></div>
         <div class="card"><div class="k">&#128101; Roommates</div><div class="v">No preference</div></div>
       </div>
@@ -325,5 +325,22 @@ var zoom=document.querySelector('.zoom');if(zoom&&zoom.parentElement){var sc=1,b
   if(document.readyState!=='loading')showName();else document.addEventListener('DOMContentLoaded',showName);
 })();
 </script>
+<script>/* km-profile-fill v1: mostra os demais campos salvos em edit-profile.html */
+(function(){
+  function g(k){ try{ var v=localStorage.getItem(k); return (v==null||v==='')?null:v; }catch(e){ return null; } }
+  function set(id,v){ var e=document.getElementById(id); if(e&&v!=null&&v!==''){ e.textContent=v; e.classList.remove('empty'); } }
+  var NOISE={ 'Quiet':30, 'Moderate':60, 'Lively':90 };
+  function fillProfile(){
+    set('pv-email', g('km_email'));
+    set('pv-age',   g('km_age'));
+    set('pv-nat',   g('km_nat'));
+    var langs=g('km_langs'); if(langs) set('pv-langs', langs.split(',').map(function(s){return s.trim();}).filter(Boolean).join(' · '));
+    set('pv-occ',   g('km_occ'));
+    set('pv-bio',   g('km_bio'));
+    var noise=g('km_noise'); if(noise){ var vv=document.getElementById('pv-noise-val'); if(vv) vv.textContent=noise; var bar=document.getElementById('pv-noise-bar'); if(bar&&NOISE[noise]!=null) bar.style.width=NOISE[noise]+'%'; }
+    var mv=g('km_movein'); if(mv){ var d=new Date(mv+'T00:00:00'); set('pv-movein', isNaN(d)?mv:d.toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'})); }
+  }
+  if(document.readyState==='complete') fillProfile(); else window.addEventListener('load', fillProfile);
+})();</script>
 </body>
 </html>
