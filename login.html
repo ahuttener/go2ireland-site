@@ -293,10 +293,20 @@ function kmCloseDev(){var e=document.getElementById('km-dev');if(e)e.style.displ
                     : 'Type your email above, then tap “Forgot password” again.', 'bad');
       return false;
     }
+    var res;
     try {
-      await kmPost('forgot.php', { email:email, lang: kmPT() ? 'pt' : 'en' });
-    } catch(e) {}
-    // Resposta identica exista o e-mail ou nao: nao entregamos quem tem conta.
+      res = await kmPost('forgot.php', { email:email, lang: kmPT() ? 'pt' : 'en' });
+    } catch(e) {
+      kmNote(kmMsg('network'), 'bad');
+      return false;
+    }
+    // Esconder se a conta existe é de propósito. Esconder que o SERVIDOR
+    // quebrou não é: sem isto, um 500 aparecia como "link a caminho" e a
+    // pessoa esperava para sempre um e-mail que nunca ia sair.
+    if (!res.body.ok) {
+      kmNote(kmMsg(res.body.error), 'bad');
+      return false;
+    }
     kmNote(kmPT()
       ? 'Se existir uma conta com ' + email + ', o link de redefinição chega em instantes. Olhe também o spam.'
       : 'If an account exists for ' + email + ', the reset link is on its way. Check your spam folder too.', 'good');
