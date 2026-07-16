@@ -1,0 +1,9 @@
+# Esta pasta é material de instalação, não conteúdo do site.
+# Sem isto, go2ireland.site/db/schema.mysql.sql abriria no navegador.
+<IfModule mod_authz_core.c>
+  Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+  Order allow,deny
+  Deny from all
+</IfModule>

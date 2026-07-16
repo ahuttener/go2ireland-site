@@ -1,0 +1,12 @@
+# Só os endpoints são chamáveis. _boot/_mailer/_emails são includes e a lib é
+# de terceiros — nenhum deles deve responder direto na web.
+<FilesMatch "^_.*\.php$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
+RedirectMatch 404 ^/api/lib/

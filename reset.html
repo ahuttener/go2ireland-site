@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex,nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Choose a new password for your Keymate account.">
+<title>New password · Keymate</title>
+<link rel="canonical" href="https://www.mykeymate.com/reset.html">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<style>
+  :root{
+    --brand:#2563eb; --ink:#0f172a; --muted:#64748b;
+    --line:#e6eaf2; --card:#ffffff; --bg:#f4f6fb;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{ --ink:#e8edf7; --muted:#98a3b6; --line:#26304a; --card:#141c30; --bg:#0b1120; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;display:grid;place-items:center;padding:22px 14px;
+       background:var(--bg);color:var(--ink);
+       font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .card{width:100%;max-width:412px;background:var(--card);border:1px solid var(--line);
+        border-radius:16px;padding:30px 26px}
+  .logo{display:block;height:30px;width:auto;margin-bottom:22px}
+  h1{margin:0;font-size:22px;line-height:1.25}
+  .sub{margin:9px 0 0;font-size:14px;color:var(--muted);line-height:1.5}
+  label{display:block;margin:18px 0 6px;font-size:13px;font-weight:700}
+  .inp{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:10px;
+       background:var(--bg);color:var(--ink);font-size:15px}
+  .inp:focus{outline:2px solid var(--brand);outline-offset:1px}
+  .hint{margin-top:7px;font-size:12px;color:var(--muted)}
+  .btn{width:100%;margin-top:20px;padding:13px;border:0;border-radius:10px;background:var(--brand);
+       color:#fff;font-size:15px;font-weight:700;cursor:pointer}
+  .btn[disabled]{opacity:.6;cursor:progress}
+  .note{margin-top:16px;padding:11px 13px;border-radius:10px;font-size:13px;font-weight:600;line-height:1.45;display:none}
+  .note.bad{background:rgba(220,38,38,.10);color:#b91c1c;display:block}
+  .note.good{background:rgba(22,163,74,.10);color:#15803d;display:block}
+  .back{display:inline-block;margin-top:18px;font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main class="card">
+  <img class="logo" src="logo.png" alt="Keymate">
+  <h1 id="h">Choose a new password</h1>
+  <p class="sub" id="sub">Pick something you don’t use anywhere else.</p>
+
+  <div id="form">
+    <label for="p1" id="l1">New password</label>
+    <input class="inp" id="p1" type="password" autocomplete="new-password" placeholder="••••••••">
+    <p class="hint" id="hint">At least 8 characters.</p>
+    <button class="btn" id="go">Save new password</button>
+  </div>
+
+  <div class="note" id="note"></div>
+  <a class="back" id="back" href="login.html">← Back to log in</a>
+</main>
+
+<script>
+(function(){
+  var PT = false;
+  try { PT = localStorage.getItem('km_lang') === 'pt'; } catch(e){}
+
+  var token = new URLSearchParams(location.search).get('t') || '';
+
+  var T = {
+    h:      ['Escolha uma senha nova','Choose a new password'],
+    sub:    ['Use algo que você não usa em nenhum outro site.','Pick something you don’t use anywhere else.'],
+    l1:     ['Senha nova','New password'],
+    hint:   ['Pelo menos 8 caracteres.','At least 8 characters.'],
+    go:     ['Salvar senha nova','Save new password'],
+    back:   ['← Voltar para o login','← Back to log in'],
+    noTok:  ['Link inválido. Peça um novo em "Esqueci a senha" na tela de login.','Invalid link. Request a new one with “Forgot password” on the login screen.'],
+    badTok: ['Esse link expirou ou já foi usado. Peça outro em "Esqueci a senha".','That link expired or was already used. Request another with “Forgot password”.'],
+    short:  ['A senha precisa de pelo menos 8 caracteres.','Your password needs at least 8 characters.'],
+    isMail: ['A senha não pode ser igual ao seu e-mail.','Your password can’t be the same as your email.'],
+    long:   ['Essa senha é longa demais.','That password is too long.'],
+    rate:   ['Muitas tentativas. Espere alguns minutos.','Too many attempts. Wait a few minutes.'],
+    net:    ['Sem conexão com o servidor.','Couldn’t reach the server.'],
+    err:    ['Algo deu errado. Tente de novo.','Something went wrong. Please try again.'],
+    done:   ['Senha alterada! Levando você para o login…','Password changed! Taking you to the login…']
+  };
+  var t = function(k){ return T[k][PT ? 0 : 1]; };
+
+  ['h','sub','l1','hint','back'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.textContent = t(id);
+  });
+  document.getElementById('go').textContent = t('go');
+
+  var note = document.getElementById('note');
+  function say(msg, kind){ note.className = 'note ' + kind; note.textContent = msg; }
+
+  var ERR = { password_too_short:'short', password_is_email:'isMail', password_too_long:'long',
+              token_invalid:'badTok', rate_limited:'rate' };
+
+  // Sem token não há o que redefinir: esconde o formulário em vez de deixar
+  // a pessoa digitar uma senha à toa.
+  if (!/^[a-f0-9]{64}$/.test(token)) {
+    document.getElementById('form').style.display = 'none';
+    say(t('noTok'), 'bad');
+    return;
+  }
+
+  var btn = document.getElementById('go');
+  btn.addEventListener('click', async function(){
+    var p1 = document.getElementById('p1').value || '';
+    if (p1.length < 8) { say(t('short'), 'bad'); return; }
+    btn.disabled = true;
+    try {
+      var r = await fetch('api/reset.php', {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'X-KM':'1' },
+        body: JSON.stringify({ token: token, password: p1, lang: PT ? 'pt' : 'en' })
+      });
+      var j = await r.json().catch(function(){ return {}; });
+      if (j.ok) {
+        document.getElementById('form').style.display = 'none';
+        say(t('done'), 'good');
+        setTimeout(function(){ location.href = 'login.html?reset=1'; }, 1400);
+        return;
+      }
+      say(t(ERR[j.error] || 'err'), 'bad');
+    } catch(e) {
+      say(t('net'), 'bad');
+    }
+    btn.disabled = false;
+  });
+
+  document.getElementById('p1').addEventListener('keydown', function(e){
+    if (e.key === 'Enter') btn.click();
+  });
+})();
+</script>
+</body>
+</html>

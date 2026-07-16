@@ -181,14 +181,14 @@ function kmCloseDev(){var e=document.getElementById('km-dev');if(e)e.style.displ
         <label for="pass">Password</label>
         <input class="inp" id="pass" type="password" placeholder="••••••••" autocomplete="current-password">
       </div>
-      <div class="row-forgot" id="forgot"><a href="mailto:info@mykeymate.com?subject=Keymate%20%E2%80%94%20password%20help">Forgot password?</a></div>
+      <div class="row-forgot" id="forgot"><a href="#" onclick="return kmForgot()">Forgot password?</a></div>
 
       <button class="btn btn-primary" id="submitBtn" onclick="kmEnter()">Log in →</button>
 
       <div class="divider">or continue with</div>
       <div class="sso">
-        <button class="btn-sso" onclick="kmEnter()"><svg class="gicon" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.9 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.1-11.3-8l-6.5 5C9.6 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.6l6.2 5.2C41.9 35.6 44 30.3 44 24c0-1.3-.1-2.3-.4-3.5z"/></svg> Continue with Google</button>
-        <button class="btn-sso" onclick="kmEnter()"><svg class="gicon" viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.9c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.8-3.5.8s-1.8-.8-3-.8c-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .7 1.1 1.6 2.3 2.7 2.3 1.1 0 1.5-.7 2.8-.7s1.7.7 2.8.7c1.2 0 1.9-1.1 2.7-2.2.8-1.2 1.2-2.4 1.2-2.5-.1 0-2.3-.9-2.4-3.6zM14.2 6.3c.6-.8 1-1.8.9-2.9-.9 0-2 .6-2.6 1.3-.6.7-1.1 1.7-.9 2.7 1 .1 2-.5 2.6-1.1z"/></svg> Continue with Apple</button>
+        <button class="btn-sso" onclick="return kmSso()"><svg class="gicon" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.9 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.1-11.3-8l-6.5 5C9.6 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.6l6.2 5.2C41.9 35.6 44 30.3 44 24c0-1.3-.1-2.3-.4-3.5z"/></svg> Continue with Google</button>
+        <button class="btn-sso" onclick="return kmSso()"><svg class="gicon" viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.9c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.8-3.5.8s-1.8-.8-3-.8c-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .7 1.1 1.6 2.3 2.7 2.3 1.1 0 1.5-.7 2.8-.7s1.7.7 2.8.7c1.2 0 1.9-1.1 2.7-2.2.8-1.2 1.2-2.4 1.2-2.5-.1 0-2.3-.9-2.4-3.6zM14.2 6.3c.6-.8 1-1.8.9-2.9-.9 0-2 .6-2.6 1.3-.6.7-1.1 1.7-.9 2.7 1 .1 2-.5 2.6-1.1z"/></svg> Continue with Apple</button>
       </div>
 
       <button class="btn" style="background:var(--card-2);color:var(--ink);border:1px solid var(--line);margin-top:14px" onclick="kmGuest()">👀 Explore without an account →</button>
@@ -200,19 +200,152 @@ function kmCloseDev(){var e=document.getElementById('km-dev');if(e)e.style.displ
 </div>
 
 <script>
-  function kmEnter(){ try{localStorage.setItem('km_auth','member');}catch(e){} location.href='feed.html'; }
+  /* Contas de verdade: fala com /api/*.php (PHP + MySQL no proprio servidor). */
+  var kmMode = 'login';
+  function kmPT(){ try{ return localStorage.getItem('km_lang')==='pt'; }catch(e){ return false; } }
+
+  var MSG = {
+    name_required:      ['Tell us your name.','Tell us your name.'],
+    email_invalid:      ['Confira o e-mail — parece incompleto.','That email address looks incomplete.'],
+    password_too_short: ['A senha precisa de pelo menos 8 caracteres.','Your password needs at least 8 characters.'],
+    password_too_long:  ['Essa senha é longa demais.','That password is too long.'],
+    password_is_email:  ['A senha não pode ser igual ao seu e-mail.','Your password can’t be the same as your email.'],
+    credentials_required:['Preencha e-mail e senha.','Fill in your email and password.'],
+    invalid_credentials:['E-mail ou senha incorretos.','Wrong email or password.'],
+    email_not_verified: ['Confirme seu e-mail primeiro — o link está na sua caixa de entrada.','Confirm your email first — the link is in your inbox.'],
+    account_locked:     ['Muitas tentativas. Tente de novo em 15 minutos, ou redefina a senha.','Too many attempts. Try again in 15 minutes, or reset your password.'],
+    rate_limited:       ['Muitas tentativas seguidas. Espere alguns minutos.','Too many attempts in a row. Wait a few minutes.'],
+    server_not_configured:['O servidor ainda não está configurado.','The server isn’t configured yet.'],
+    db_unavailable:     ['Estamos com um problema no servidor. Tente mais tarde.','We’re having a server problem. Please try later.'],
+    network:            ['Sem conexão com o servidor. Verifique sua internet.','Couldn’t reach the server. Check your connection.'],
+    generic:            ['Algo deu errado. Tente de novo.','Something went wrong. Please try again.']
+  };
+  function kmMsg(code){ var m = MSG[code] || MSG.generic; return kmPT() ? m[0] : m[1]; }
+
+  function kmNote(text, kind){
+    var box = document.getElementById('kmNote');
+    if(!box){
+      box = document.createElement('div');
+      box.id = 'kmNote';
+      box.setAttribute('role','status');
+      box.style.cssText = 'margin:12px 0 2px;padding:11px 13px;border-radius:10px;font-size:13px;font-weight:600;line-height:1.45';
+      var t = document.getElementById('ftitle');
+      t.parentNode.insertBefore(box, t.nextSibling);
+    }
+    box.style.background = kind==='bad' ? 'rgba(220,38,38,.10)' : 'rgba(22,163,74,.10)';
+    box.style.color      = kind==='bad' ? '#b91c1c' : '#15803d';
+    box.textContent = text;
+    box.style.display = 'block';
+  }
+  function kmClearNote(){ var b=document.getElementById('kmNote'); if(b) b.style.display='none'; }
+
+  function kmBusy(on){
+    var b = document.getElementById('submitBtn');
+    b.disabled = on;
+    b.style.opacity = on ? '.6' : '';
+    b.style.cursor  = on ? 'progress' : '';
+  }
+
+  async function kmPost(ep, payload){
+    var r = await fetch('api/' + ep, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'X-KM':'1' },
+      body: JSON.stringify(payload)
+    });
+    var j = null; try { j = await r.json(); } catch(e){}
+    return { status: r.status, body: j || {} };
+  }
+
+  async function kmEnter(){
+    kmClearNote();
+    var name  = (document.getElementById('name').value  || '').trim();
+    var email = (document.getElementById('email').value || '').trim();
+    var pass  =  document.getElementById('pass').value  || '';
+    var lang  = kmPT() ? 'pt' : 'en';
+    kmBusy(true);
+    try {
+      if (kmMode === 'signup') {
+        var s = await kmPost('signup.php', { name:name, email:email, password:pass, lang:lang });
+        if (s.body.ok) {
+          kmNote(kmPT()
+            ? 'Quase lá! Enviamos um e-mail para ' + email + '. Abra o link para confirmar sua conta.'
+            : 'Almost there! We sent an email to ' + email + '. Open the link to confirm your account.', 'good');
+          document.getElementById('submitBtn').style.display = 'none';
+        } else kmNote(kmMsg(s.body.error), 'bad');
+      } else {
+        var l = await kmPost('login.php', { email:email, password:pass, lang:lang });
+        if (l.body.ok) { location.href = 'feed.html'; return; }
+        kmNote(kmMsg(l.body.error), 'bad');
+      }
+    } catch(e) {
+      kmNote(kmMsg('network'), 'bad');
+    }
+    kmBusy(false);
+  }
+
+  /* "Esqueci a senha": pede o e-mail e dispara o link de redefinicao. */
+  async function kmForgot(){
+    kmClearNote();
+    var email = (document.getElementById('email').value || '').trim();
+    if (!email) {
+      document.getElementById('email').focus();
+      kmNote(kmPT() ? 'Escreva seu e-mail acima e toque de novo em "Esqueci a senha".'
+                    : 'Type your email above, then tap “Forgot password” again.', 'bad');
+      return false;
+    }
+    try {
+      await kmPost('forgot.php', { email:email, lang: kmPT() ? 'pt' : 'en' });
+    } catch(e) {}
+    // Resposta identica exista o e-mail ou nao: nao entregamos quem tem conta.
+    kmNote(kmPT()
+      ? 'Se existir uma conta com ' + email + ', o link de redefinição chega em instantes. Olhe também o spam.'
+      : 'If an account exists for ' + email + ', the reset link is on its way. Check your spam folder too.', 'good');
+    return false;
+  }
+
   function kmGuest(){ try{localStorage.setItem('km_auth','guest');}catch(e){} location.href='feed.html'; }
+
+  /* Google/Apple ainda nao existem: nao podem fingir um login. */
+  function kmSso(){
+    kmNote(kmPT() ? 'Entrar com Google/Apple ainda não está disponível — use e-mail e senha por enquanto.'
+                  : 'Google/Apple sign-in isn’t available yet — please use email and password for now.', 'bad');
+    return false;
+  }
+
   function setMode(m){
+    kmMode = m;
+    kmClearNote();
     var isSignup = m==='signup';
+    var btn = document.getElementById('submitBtn');
+    btn.style.display = '';
+    kmBusy(false);
     document.getElementById('tabLogin').classList.toggle('on',!isSignup);
     document.getElementById('tabSignup').classList.toggle('on',isSignup);
     document.getElementById('nameField').style.display = isSignup?'block':'none';
     document.getElementById('forgot').style.display = isSignup?'none':'flex';
     document.getElementById('ftitle').textContent = isSignup?'Create your account':'Welcome back';
     document.getElementById('fsub').textContent = isSignup?'Set up your profile and see matches in 2 minutes.':'Log in to see your matches and messages.';
-    document.getElementById('submitBtn').textContent = isSignup?'Create account →':'Log in →';
+    btn.textContent = isSignup?'Create account →':'Log in →';
     document.getElementById('pass').setAttribute('autocomplete', isSignup?'new-password':'current-password');
   }
+
+  /* Enter envia o formulario. */
+  ['email','pass','name'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('keydown', function(e){ if (e.key === 'Enter') kmEnter(); });
+  });
+
+  /* Vindo do link de confirmacao que falhou/expirou. */
+  (function(){
+    if (location.search.indexOf('verified=0') > -1) {
+      kmNote(kmPT() ? 'Esse link de confirmação expirou ou já foi usado. Faça login para receber outro.'
+                    : 'That confirmation link expired or was already used. Log in to get a new one.', 'bad');
+    }
+    if (location.search.indexOf('reset=1') > -1) {
+      kmNote(kmPT() ? 'Senha alterada! Agora é só entrar.'
+                    : 'Password changed! You can log in now.', 'good');
+    }
+  })();
 </script>
 
 
