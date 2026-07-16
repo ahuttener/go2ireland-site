@@ -259,7 +259,7 @@
       var inp=document.getElementById('msgInput'); var v=inp.value.trim(); if(!v)return;
       var m=document.getElementById('msgs');
       var now=new Date(); var hh=('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2);
-      var d=document.createElement('div'); d.className='msg me'; d.innerHTML=v.replace(/</g,'&lt;')+'<div class="mt">'+hh+'</div>';
+      var d=document.createElement('div'); d.className='msg me'; d.appendChild(document.createTextNode(v)); var mt=document.createElement('div'); mt.className='mt'; mt.textContent=hh; d.appendChild(mt);
       m.appendChild(d); inp.value=''; m.scrollTop=m.scrollHeight;
       setTimeout(function(){
         var r=document.createElement('div'); r.className='msg them'; r.innerHTML='Great — see you then! 👍<div class="mt">'+hh+'</div>';
