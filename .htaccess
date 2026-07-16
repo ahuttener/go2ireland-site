@@ -6,6 +6,25 @@
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+
+  # Content-Security-Policy (H2 da auditoria 2026-07-16)
+  #
+  # 'unsafe-inline' em script-src é INEVITÁVEL hoje: as páginas usam ~271 handlers
+  # inline (onclick=/onchange=) + <script> inline sem nonce. Como o site é estático,
+  # não há servidor gerando nonce por request. Consequência honesta: esta CSP NÃO
+  # barra XSS refletido/inline — ela barra o que ainda importa muito num site
+  # estático: script de origem externa não-listada, <base> sequestrado, injeção de
+  # <object>/<embed>, exfiltração via fetch/XHR p/ terceiros e clickjacking.
+  # Para virar CSP forte de verdade: migrar os handlers p/ addEventListener e
+  # trocar 'unsafe-inline' por 'nonce-...' (exige backend) — ver keymate-app.
+  #
+  # unpkg.com  = Leaflet (JS+CSS, com SRI); *.basemaps.cartocdn.com = tiles do mapa.
+  # Ambos só carregam depois do consentimento do usuário (km-map-consent v1).
+  #
+  # ⚠️ AO LEVAR ESTE ARQUIVO PARA O mykeymate.com: lá existe o form real da waitlist
+  # que faz fetch() p/ o endpoint do waitlist.php. connect-src 'self' VAI BLOQUEAR
+  # esse POST — incluir o host do endpoint em connect-src/form-action antes.
+  Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'; frame-ancestors 'self'; connect-src 'self'; font-src 'self' data:; img-src 'self' data: blob: https://unpkg.com https://*.basemaps.cartocdn.com; style-src 'self' 'unsafe-inline' https://unpkg.com; script-src 'self' 'unsafe-inline' https://unpkg.com; upgrade-insecure-requests"
 </IfModule>
 
 # Página 404 personalizada (com marca + link para a home)

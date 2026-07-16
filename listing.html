@@ -25,7 +25,7 @@
 <meta name="twitter:title" content="Keymate — Bright double in Drumcondra, Dublin">
 <meta name="twitter:description" content="Find a room and match with roommates who fit your vibe. Built for the community in Ireland.">
 <meta name="twitter:image" content="https://www.mykeymate.com/og-image.png">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous"/>
+<!-- Leaflet CSS/JS sao injetados sob consentimento — ver km-map-consent v1 -->
 <style>/* km-mobile-overflow v1 — zera scroll horizontal a <=520px (M2) */
 @media (max-width:520px){
   .topbar-in{padding-left:12px !important;padding-right:12px !important;gap:10px !important}
@@ -408,12 +408,80 @@ var cl=document.querySelector('.citylist');if(cl){[].forEach.call(cl.querySelect
  if(t.indexOf('request a viewing')>-1){b.addEventListener('click',function(){location.href='messages.html';});}
  else if((b.className||'').indexOf('plus')>-1){b.addEventListener('click',function(){toast('Attachments coming soon');});}});
 var zoom=document.querySelector('.zoom');if(zoom&&zoom.parentElement){var sc=1,box=zoom.parentElement,bt=zoom.querySelectorAll('button');function ap(){box.style.transition='transform .15s';box.style.transformOrigin='center';box.style.transform='scale('+sc+')';}if(bt[0])bt[0].addEventListener('click',function(){sc=Math.min(2,sc+0.2);ap();});if(bt[1])bt[1].addEventListener('click',function(){sc=Math.max(0.6,sc-0.2);ap();});}
-}catch(e){}});})();</script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
+}catch(e){}});})();</script><!-- km-map-consent v1 — Leaflet/CARTO só carregam depois do OK do usuário (GDPR) -->
+<script>
+(function(){
+  if(window.kmMapGate) return;
+  var CSS='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+      CSSI='sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H',
+      JS='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+      JSI='sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH',
+      KEY='km_map_consent';
+  var queue=[],loading=false;
+  function isPT(){try{return localStorage.getItem('km_lang')==='pt';}catch(e){return false;}}
+  function allowed(){try{return localStorage.getItem(KEY)==='1';}catch(e){return false;}}
+  function load(cb){
+    if(window.L){cb();return;}
+    queue.push(cb);
+    if(loading)return; loading=true;
+    var l=document.createElement('link');
+    l.rel='stylesheet';l.href=CSS;l.integrity=CSSI;l.crossOrigin='anonymous';
+    document.head.appendChild(l);
+    var s=document.createElement('script');
+    s.src=JS;s.integrity=JSI;s.crossOrigin='anonymous';
+    s.onload=function(){loading=false;var q=queue;queue=[];q.forEach(function(f){try{f();}catch(e){}});};
+    s.onerror=function(){loading=false;queue=[];};
+    document.head.appendChild(s);
+  }
+  function style(){
+    if(document.getElementById('km-mapgate-css'))return;
+    var st=document.createElement('style');st.id='km-mapgate-css';
+    st.textContent='.km-mapgate{position:absolute;inset:0;z-index:2;display:grid;place-items:center;padding:18px;text-align:center;background:var(--card,#fff)}'
+      +'.km-mapgate strong{display:block;margin-bottom:6px;font-size:15px;font-weight:800;color:var(--ink,#111)}'
+      +'.km-mapgate p{margin:0 auto 12px;max-width:40ch;font-size:12.5px;line-height:1.5;color:var(--muted,#667)}'
+      +'.km-mapgate button{border:0;border-radius:10px;padding:10px 16px;background:var(--brand,#2563eb);color:#fff;font-weight:700;font-size:13px;cursor:pointer}';
+    document.head.appendChild(st);
+  }
+  /* kmMapGate(el, cb): chama cb() quando o Leaflet estiver disponível.
+     Sem consentimento, pinta um cartão no lugar do mapa e não faz request externo. */
+  window.kmMapGate=function(el,cb){
+    if(!el)return;
+    if(allowed()){load(cb);return;}
+    if(el.querySelector('.km-mapgate'))return;
+    style();
+    if(getComputedStyle(el).position==='static')el.style.position='relative';
+    var box=document.createElement('div');box.className='km-mapgate';
+    var inner=document.createElement('div'),
+        t=document.createElement('strong'),
+        p=document.createElement('p'),
+        b=document.createElement('button');
+    b.type='button';
+    if(isPT()){
+      t.textContent='Mapa desativado';
+      p.textContent='O mapa vem do OpenStreetMap/CARTO e do unpkg.com. Carregá-lo envia o seu endereço IP a esses serviços. Nada é carregado sem a sua permissão.';
+      b.textContent='Carregar mapa';
+    }else{
+      t.textContent='Map is off';
+      p.textContent='The map is served by OpenStreetMap/CARTO and unpkg.com. Loading it sends your IP address to those services. Nothing loads until you allow it.';
+      b.textContent='Load map';
+    }
+    b.addEventListener('click',function(){
+      try{localStorage.setItem(KEY,'1');}catch(e){}
+      if(box.parentNode)box.parentNode.removeChild(box);
+      load(cb);
+    });
+    inner.appendChild(t);inner.appendChild(p);inner.appendChild(b);
+    box.appendChild(inner);el.appendChild(box);
+  };
+})();
+</script>
 <script>
 (function(){
   function initMap(){
     var el=document.getElementById('livemap');
-    if(!el||!window.L)return;
+    if(!el)return;
+    if(!window.L){window.kmMapGate(el,initMap);return;}
+    if(el.__kmMapDone)return; el.__kmMapDone=1;
     var lat=53.3706,lng=-6.2591;
     var dark=(window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches)||document.documentElement.getAttribute('data-theme')==='dark';
     var map=L.map(el,{scrollWheelZoom:false,zoomControl:true}).setView([lat,lng],14);
