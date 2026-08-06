@@ -477,21 +477,91 @@ var zoom=document.querySelector('.zoom');if(zoom&&zoom.parentElement){var sc=1,b
 </script>
 <script>
 (function(){
+  /* Coordenadas exatas do im\u00f3vel (fonte \u00fanica p/ mapa e c\u00e1lculo de dist\u00e2ncia) */
+  var LISTING_LAT=53.3706, LISTING_LNG=-6.2591;
+  var mapRef=null, meMarker=null, meLine=null;
+
+  function isPT(){try{return localStorage.getItem('km_lang')==='pt';}catch(e){return false;}}
+
+  /* dist\u00e2ncia em km entre dois pontos (haversine) */
+  function haversine(aLat,aLng,bLat,bLng){
+    function r(d){return d*Math.PI/180;}
+    var R=6371, dLat=r(bLat-aLat), dLng=r(bLng-aLng);
+    var s=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(r(aLat))*Math.cos(r(bLat))*Math.sin(dLng/2)*Math.sin(dLng/2);
+    return 2*R*Math.asin(Math.min(1,Math.sqrt(s)));
+  }
+  function fmtDist(km){ return km<1 ? Math.round(km*1000)+' m' : (km<10?km.toFixed(1):Math.round(km))+' km'; }
+
   function initMap(){
     var el=document.getElementById('livemap');
     if(!el)return;
     if(!window.L){window.kmMapGate(el,initMap);return;}
     if(el.__kmMapDone)return; el.__kmMapDone=1;
-    var lat=53.3706,lng=-6.2591;
+    var lat=LISTING_LAT,lng=LISTING_LNG;
     var dark=(window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches)||document.documentElement.getAttribute('data-theme')==='dark';
     var map=L.map(el,{scrollWheelZoom:false,zoomControl:true}).setView([lat,lng],14);
+    mapRef=map;
     L.tileLayer('https://{s}.basemaps.cartocdn.com/'+(dark?'dark_all':'light_all')+'/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:19,attribution:'&copy; OpenStreetMap &copy; CARTO'}).addTo(map);
     L.circle([lat,lng],{radius:320,color:'#2563eb',weight:1,fillColor:'#2563eb',fillOpacity:.12}).addTo(map);
     var icon=L.divIcon({className:'',html:'<span class="pinbadge">\u20ac680</span>',iconSize:[0,0],iconAnchor:[0,0]});
     L.marker([lat,lng],{icon:icon}).addTo(map);
     setTimeout(function(){map.invalidateSize();},250);
   }
-  if(document.readyState!=='loading')initMap();else document.addEventListener('DOMContentLoaded',initMap);
+
+  /* desenha o visitante (ponto verde) + linha at\u00e9 o im\u00f3vel; requer mapa carregado */
+  function drawMe(mlat,mlng){
+    if(!window.L||!mapRef)return false;
+    if(meMarker)mapRef.removeLayer(meMarker);
+    if(meLine)mapRef.removeLayer(meLine);
+    var meIcon=L.divIcon({className:'',html:'<span style="display:block;width:16px;height:16px;background:#16a34a;border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 6px rgba(22,163,74,.25)"></span>',iconSize:[16,16],iconAnchor:[8,8]});
+    meMarker=L.marker([mlat,mlng],{icon:meIcon}).addTo(mapRef);
+    meLine=L.polyline([[mlat,mlng],[LISTING_LAT,LISTING_LNG]],{color:'#16a34a',weight:2,dashArray:'5,6',opacity:.9}).addTo(mapRef);
+    try{mapRef.fitBounds(meLine.getBounds().pad(0.35));}catch(e){}
+    return true;
+  }
+
+  /* bot\u00e3o "qual a dist\u00e2ncia at\u00e9 mim?" \u2014 geolocaliza\u00e7\u00e3o do visitante + dist\u00e2ncia */
+  function addDistanceUI(){
+    var el=document.getElementById('livemap');
+    if(!el||!el.parentNode)return;
+    var block=el.parentNode;
+    if(block.querySelector('.km-dist'))return;
+    var wrap=document.createElement('div');
+    wrap.className='km-dist';
+    wrap.style.cssText='margin-top:10px;display:flex;align-items:center;gap:12px;flex-wrap:wrap';
+    var btn=document.createElement('button');
+    btn.type='button';
+    btn.style.cssText='border:0;border-radius:10px;padding:9px 14px;background:var(--brand,#2563eb);color:#fff;font-weight:700;font-size:13px;cursor:pointer';
+    btn.textContent=isPT()?'\ud83d\udccd Qual a dist\u00e2ncia at\u00e9 mim?':'\ud83d\udccd How far is it from me?';
+    var out=document.createElement('span');
+    out.style.cssText='font-size:13px;color:var(--muted,#667);font-weight:600';
+    wrap.appendChild(btn);wrap.appendChild(out);
+    block.appendChild(wrap);
+
+    function say(t,err){ out.textContent=t; out.style.color=err?'#b00020':''; }
+
+    btn.addEventListener('click',function(){
+      if(!navigator.geolocation){ say(isPT()?'Geolocaliza\u00e7\u00e3o n\u00e3o suportada.':'Geolocation not supported.',true); return; }
+      btn.disabled=true; say(isPT()?'Localizando\u2026':'Locating\u2026');
+      navigator.geolocation.getCurrentPosition(function(pos){
+        btn.disabled=false;
+        var mlat=pos.coords.latitude, mlng=pos.coords.longitude;
+        var d=fmtDist(haversine(mlat,mlng,LISTING_LAT,LISTING_LNG));
+        say(isPT()?('Voc\u00ea est\u00e1 a ~'+d+' do im\u00f3vel'):('You are ~'+d+' away'));
+        if(!drawMe(mlat,mlng)){
+          /* mapa ainda n\u00e3o carregado (sem consentimento): mostra s\u00f3 o texto */
+          out.textContent+=isPT()?' \u00b7 carregue o mapa para ver no mapa':' \u00b7 load the map to see it';
+        }
+      },function(err){
+        btn.disabled=false;
+        var m={1:(isPT()?'Permiss\u00e3o de localiza\u00e7\u00e3o negada.':'Location permission denied.'),2:(isPT()?'Localiza\u00e7\u00e3o indispon\u00edvel.':'Location unavailable.'),3:(isPT()?'Tempo esgotado.':'Timed out.')};
+        say(m[err.code]||(isPT()?'N\u00e3o foi poss\u00edvel localizar.':'Could not get your location.'),true);
+      },{enableHighAccuracy:true,timeout:10000,maximumAge:0});
+    });
+  }
+
+  function boot(){ initMap(); addDistanceUI(); }
+  if(document.readyState!=='loading')boot();else document.addEventListener('DOMContentLoaded',boot);
 })();
 </script>
 
